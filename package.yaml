@@ -45,4 +45,6 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - QuickCheck == 2.*
+    - hspec == 2.*
     - thump
