@@ -1,30 +1,11 @@
 module PositionSpec (spec) where
 
+import Control.Applicative
 import Test.Hspec
 import Test.QuickCheck
 
 import Position
-
-boundedCoordinate :: Gen Int
-boundedCoordinate = choose (0, 14)
-
-boundedCoordinates :: Gen (Int, Int)
-boundedCoordinates = (,) <$> boundedCoordinate <*> boundedCoordinate
-
-unboundedCoordinate :: Gen Int
-unboundedCoordinate = oneof [choose (minBound, -1), choose(15, maxBound)]
-
-unboundedCoordinates :: Gen (Int, Int)
-unboundedCoordinates = (,) <$> unboundedCoordinate <*> unboundedCoordinate
-
-validCoordinates :: Gen (Int, Int)
-validCoordinates = boundedCoordinates `suchThat` uncurry isValid
-
-invalidCoordinates :: Gen (Int, Int)
-invalidCoordinates = oneof
-  [ boundedCoordinates `suchThat` (not . uncurry isValid)
-  , unboundedCoordinates
-  ]
+import PositionArbitraries
 
 spec :: Spec
 spec = do
@@ -128,6 +109,8 @@ spec = do
           forAll (choose (0, 14)) $ \y ->
             isValid x y `shouldBe` True
   describe "position" $ do
+    it "inverts unPosition" $ property $ \p ->
+      uncurry position (unPosition p) `shouldBe` Just p
     context "given invalid coordinates" $ do
       it "returns nothing" $ property $
         forAll invalidCoordinates $ \(x, y) ->
