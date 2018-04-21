@@ -1,5 +1,6 @@
 module PositionArbitraries where
 
+import Data.Maybe
 import Test.Hspec
 import Test.QuickCheck
 
@@ -18,7 +19,7 @@ unboundedCoordinates :: Gen (Int, Int)
 unboundedCoordinates = (,) <$> unboundedCoordinate <*> unboundedCoordinate
 
 validCoordinates :: Gen (Int, Int)
-validCoordinates = boundedCoordinates `suchThat` uncurry isValid
+validCoordinates = boundedCoordinates `suchThat` (isJust . uncurry position)
 
 invalidCoordinates :: Gen (Int, Int)
 invalidCoordinates = oneof
